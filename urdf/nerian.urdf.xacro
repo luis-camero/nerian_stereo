@@ -63,8 +63,4 @@
       <xacro:insert_block name="origin"/>
     </joint>
   </xacro:macro>
-
-  <xacro:nerian_scarlet parent="top_plate_link">
-    <origin xyz="0 0 0.1" rpy="0 0 0"/>
-  </xacro:nerian_scarlet>
 </robot>
