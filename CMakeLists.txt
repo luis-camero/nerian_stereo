@@ -217,3 +217,8 @@ install(FILES
     launch/nerian_stereo_nodelet.launch
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
 )
+
+install(DIRECTORY
+    urdf
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)

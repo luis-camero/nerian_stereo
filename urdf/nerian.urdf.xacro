@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:macro name="nerian_scarlet" params="parent prefix:='' *origin">
+    <link name="${prefix}nerian_scarlet_base">
+      <visual>
+        <material name="scarlet">
+          <color rgba="0.56 0.1 0.068 1"/>
+        </material>
+        <origin xyz="0 0 0.035" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.03035 0.31525 0.07"/>
+        </geometry>
+      </visual>
+      <visual>
+        <material name="scarlet"/>
+        <origin xyz="-0.0254 -0.049125 0.035" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.02045 0.217 0.07"/>
+        </geometry>
+      </visual>
+      <visual>
+        <material name="black">
+          <color rgba="0.87 0.87 0.87 1"/>
+        </material>
+        <origin xyz="-0.058375 -0.01591 0.035" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.0455 0.15057 0.07"/>
+        </geometry>
+      </visual>
+      <visual>
+        <material name="black"/>
+        <origin xyz="0.025725 -0.125 0.035" rpy="0 1.5707 0"/>
+        <geometry>
+          <cylinder radius="0.02595" length="0.05145"/>
+        </geometry>
+      </visual>
+      <visual>
+        <material name="black"/>
+        <origin xyz="0.025725 0.125 0.035" rpy="0 1.5707 0"/>
+        <geometry>
+          <cylinder radius="0.02595" length="0.05145"/>
+        </geometry>
+      </visual>
+    </link>
+
+    <link name="${prefix}nerian_right_lens"/>
+    <joint name="${prefix}nerian_right_lens_joint" type="fixed">
+      <parent link="${prefix}nerian_scarlet_base"/>
+      <child link="${prefix}nerian_right_lens"/>
+      <origin xyz="0.05145 -0.125 0.035"/>
+    </joint>
+
+    <link name="${prefix}nerian_left_lens"/>
+    <joint name="${prefix}nerian_left_lens_joint" type="fixed">
+      <parent link="${prefix}nerian_scarlet_base"/>
+      <child link="${prefix}nerian_left_lens"/>
+      <origin xyz="0.05145 0.125 0.035"/>
+    </joint>
+
+    <joint name="${prefix}nerial_scarlet_base_joint" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${prefix}nerian_scarlet_base"/>
+      <xacro:insert_block name="origin"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:nerian_scarlet parent="top_plate_link">
+    <origin xyz="0 0 0.1" rpy="0 0 0"/>
+  </xacro:nerian_scarlet>
+</robot>
