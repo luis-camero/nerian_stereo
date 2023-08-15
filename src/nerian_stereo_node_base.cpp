@@ -107,6 +107,10 @@ void StereoNodeBase::init() {
         internalFrame = "nerian_stereo";
     }
 
+    if (!privateNh.getParam("publish_internal_frame", publishInternalFrame)){
+        publishInternalFrame = true;
+    }
+
     if (!privateNh.getParam("remote_port", remotePort)) {
         remotePort = "7681";
     }
@@ -164,17 +168,18 @@ void StereoNodeBase::init() {
         "/nerian_stereo/point_cloud", 5)));
 
     transformBroadcaster.reset(new tf2_ros::TransformBroadcaster());
-    currentTransform.header.stamp = ros::Time::now();
-    currentTransform.header.frame_id = frame;
-    currentTransform.child_frame_id = internalFrame;
-    currentTransform.transform.translation.x = 0.0;
-    currentTransform.transform.translation.y = 0.0;
-    currentTransform.transform.translation.z = 0.0;
-    currentTransform.transform.rotation.x = 0.0;
-    currentTransform.transform.rotation.y = 0.0;
-    currentTransform.transform.rotation.z = 0.0;
-    currentTransform.transform.rotation.w = 1.0;
-
+    if(publishInternalFrame){
+        currentTransform.header.stamp = ros::Time::now();
+        currentTransform.header.frame_id = frame;
+        currentTransform.child_frame_id = internalFrame;
+        currentTransform.transform.translation.x = 0.0;
+        currentTransform.transform.translation.y = 0.0;
+        currentTransform.transform.translation.z = 0.0;
+        currentTransform.transform.rotation.x = 0.0;
+        currentTransform.transform.rotation.y = 0.0;
+        currentTransform.transform.rotation.z = 0.0;
+        currentTransform.transform.rotation.w = 1.0;
+    }
 }
 
 void StereoNodeBase::initDataChannelService() {
@@ -294,7 +299,8 @@ void StereoNodeBase::publishImageMsg(const ImageSet& imageSet, int imageIndex, r
     }
 
     cv_bridge::CvImage cvImg;
-    cvImg.header.frame_id = internalFrame;
+    if(publishInternalFrame) cvImg.header.frame_id = internalFrame;
+    else cvImg.header.frame_id = frame;
     cvImg.header.stamp = stamp;
     cvImg.header.seq = imageSet.getSequenceNumber(); // Actually ROS will overwrite this
 
@@ -405,7 +411,8 @@ void StereoNodeBase::publishPointCloudMsg(ImageSet& imageSet, ros::Time stamp) {
 
     // Create message object and set header
     pointCloudMsg->header.stamp = stamp;
-    pointCloudMsg->header.frame_id = internalFrame;
+    if(publishInternalFrame) pointCloudMsg->header.frame_id = internalFrame;
+    else pointCloudMsg->header.frame_id = frame;
     pointCloudMsg->header.seq = imageSet.getSequenceNumber(); // Actually ROS will overwrite this
 
     // Copy 3D points
@@ -638,7 +645,8 @@ void StereoNodeBase::publishCameraInfo(ros::Time stamp, const ImageSet& imageSet
         // Initialize the camera info structure
         camInfoMsg.reset(new nerian_stereo::StereoCameraInfo);
 
-        camInfoMsg->header.frame_id = internalFrame;
+        if(publishInternalFrame) camInfoMsg->header.frame_id = internalFrame;
+        else camInfoMsg->header.frame_id = frame;
         camInfoMsg->header.seq = imageSet.getSequenceNumber(); // Actually ROS will overwrite this
 
         if(calibFile != "") {
@@ -718,6 +726,9 @@ template<class T> void StereoNodeBase::readCalibrationArray(const char* key, T& 
 }
 
 void StereoNodeBase::processDataChannels() {
+    if(!publishInternalFrame){
+        return;
+    }
     auto now = ros::Time::now();
     if ((now - currentTransform.header.stamp).toSec() < 0.01) {
         // Limit to 100 Hz transform update frequency

@@ -1,12 +1,24 @@
 <launch>
-    <!-- Configure the IP address of Scarlet/SceneScan -->
+    <!-- Configure the IP address of SceneScan/SP1 -->
     <arg name="device_address" default="192.168.10.10" />
+
+    <!-- Configure message transport -->
+    <arg name="use_tcp" default="false"/>
 
     <!-- Configure the destination where the calibration will saved -->
     <arg name="calib_file" default="/tmp/nerian_calib.yaml" />
 
-    <!-- Configure the name of the ROS node -->
-    <arg name="node_name" default="nerian_stereo_node" />
+    <!-- Configure the name of the ROS nodelet -->
+    <arg name="node_name" default="nerian_stereo_nodelet" />
+
+    <!-- Configure the frame to add pointcloud -->
+    <arg name="frame" default="world" />
+
+    <!-- Configure rotating internal frame attached to frame -->
+    <arg name="internal_frame" default="nerian_stereo"/>
+
+    <!-- Configure whether to publish internal frame or to publish to frame -->
+    <arg name="publish_internal_frame" default="true"/>
 
     <!-- Download the current camera calibration -->
     <node pkg="nerian_stereo" type="download_calibration.sh" args="$(arg device_address) $(arg calib_file)" name="download_calib" output="screen" />
@@ -28,13 +40,15 @@
         <param name="color_code_disparity_map" type="string" value="none" />
         <param name="color_code_legend" type="bool" value="true" />
 
-        <param name="use_tcp" type="bool" value="false" />
+        <param name="use_tcp" type="bool" value="$(arg use_tcp)" />
 
         <param name="remote_host" type="string" value="$(arg device_address)" />
         <param name="remote_port" type="string" value="7681" />
 
-        <param name="calibration_file" type="string" value="$(arg calib_file)"/>
-        <param name="frame" type="string" value="map" />
+        <param name="calibration_file" type="string" value="$(arg calib_file)" />
+        <param name="frame" type="string" value="$(arg frame)" />
+        <param name="internal_frame" type="string" value="$(arg internal_frame)" />
+        <param name="publish_internal_frame" type="bool" value="$(arg publish_internal_frame)" />
 
         <param name="delay_execution" type="double" value="2" />
         <param name="max_depth" type="double" value="-1" />

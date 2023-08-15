@@ -151,6 +151,7 @@ private:
     std::string remotePort;
     std::string frame; // outer frame (e.g. world)
     std::string internalFrame; // our private frame / Transform we publish
+    bool publishInternalFrame; // publish private frame and publish pointcloud to private frame
     std::string remoteHost;
     std::string calibFile;
     double execDelay;
